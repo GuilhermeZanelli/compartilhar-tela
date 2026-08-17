@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tela 1080p - Link Direto</title>
+    <title>Tela 1080p - Alto FPS</title>
     <style>
         body { 
             background-color: #000000; 
@@ -69,11 +69,8 @@
 
     <script src="https://meet.jit.si/external_api.js"></script>
     <script>
-        // A função agora aceita receber o nome da sala direto pela programação
-        function entrarNaSala(nomeVindoDaUrl) {
-            // Se o nome não vier da URL, ele pega o que está digitado na caixa
-            const nomeDaSala = nomeVindoDaUrl || document.getElementById('nome-sala').value.trim();
-            
+        function entrarNaSala() {
+            const nomeDaSala = document.getElementById('nome-sala').value.trim();
             if (!nomeDaSala) return;
 
             document.getElementById('tela-entrada').style.display = 'none';
@@ -88,10 +85,15 @@
                     constraints: {
                         video: {
                             height: { ideal: 1080, max: 1080, min: 720 },
+                            // Pede ao navegador para tentar o máximo, mas se adaptar
                             frameRate: { ideal: 60, max: 244, min: 5 } 
                         }
                     },
-                    desktopSharingFrameRate: { min: 5, max: 244 },
+                    // Configuração específica para captura de tela do Jitsi
+                    desktopSharingFrameRate: {
+                        min: 5,   // O valor baixo garante a adaptação em PCs fracos
+                        max: 244  // O limite máximo que você pediu
+                    },
                     
                     startWithAudioMuted: true,
                     startWithVideoMuted: true,
@@ -114,18 +116,6 @@
             
             const api = new JitsiMeetExternalAPI(domain, options);
         }
-
-        // --- SISTEMA DE LINK DIRETO ---
-        // Assim que a página carrega, ele verifica se existe "?sala=" no final do link
-        window.onload = () => {
-            const parametros = new URLSearchParams(window.location.search);
-            const salaNaUrl = parametros.get('sala');
-            
-            // Se encontrou um nome na URL, entra na sala automaticamente pulando a tela de botão
-            if (salaNaUrl) {
-                entrarNaSala(salaNaUrl);
-            }
-        };
     </script>
 </body>
 </html>
